@@ -466,11 +466,21 @@
     color: #27AE60;
     margin-bottom: 20px;
   }
+  
+  .payment-fee-info {
+    background: #FFF8F8;
+    border: 1px solid var(--red-light);
+    border-radius: 4px;
+    padding: 12px 15px;
+    font-size: 12px;
+    color: var(--black);
+    margin-top: 8px;
+  }
 </style>
 <script>
   // Flutterwave Configuration
   const FLUTTERWAVE_PUBLIC_KEY = 'FLWPUBK-cdfff1ef6be73c35e2cd9d418fbaae75-X';
-  const ENROLMENT_FEE = 5000; // ₦5000 in naira (adjust as needed)
+  const ENROLMENT_FEE = 79000; // ₦79,000 in naira
 
   function toggleIsbnBox() {
     const isbnBox = document.getElementById('isbn_box');
@@ -615,7 +625,7 @@
       },
       customizations: {
         title: 'Axon POD Enrolment',
-        description: 'Book Enrolment Fee - ' + bookTitle,
+        description: 'Enrolment Fee - ' + bookTitle,
         logo: 'https://axon.com/logo.png'
       },
       callback: function(data) {
@@ -646,6 +656,7 @@
     // Add transaction ID to form data
     formData.append('flutterwave_transaction_id', transactionId);
     formData.append('payment_status', 'completed');
+    formData.append('enrolment_fee', ENROLMENT_FEE);
 
     const form = document.querySelector('form');
 
@@ -720,7 +731,7 @@
 <div id="success_message">
   <div class="success-icon">✓</div>
   <h2>Thank you for enrolling on Axon POD!</h2>
-  <p>Your payment has been confirmed and your enrollment is complete. Our team will reach out to you through your provided WhatsApp line within the next 24 hours to onboard you.</p>
+  <p>Your payment of ₦79,000 has been confirmed and your enrollment is complete. Our team will reach out to you through your provided WhatsApp line within the next 24 hours to onboard you.</p>
 </div>
 
 <form id="enrollment_form" action="https://formspree.io/f/xwvdazqz" method="POST" enctype="multipart/form-data">
@@ -984,6 +995,15 @@
         </div>
       </div>
 
+      <!-- PAYMENT INFO -->
+      <div class="section">
+        <div class="payment-fee-info">
+          <strong>Enrolment Fee:</strong> ₦79,000
+          <br><br>
+          This fee covers the initial processing and setup of your book for publication on the Axon POD platform.
+        </div>
+      </div>
+
       <!-- NDA AGREEMENT -->
       <div class="section">
         <div class="section-header">
@@ -1001,7 +1021,7 @@
 
       <!-- SUBMIT -->
       <div class="submit-container">
-        <button type="submit" class="btn-submit">Submit Enrolment</button>
+        <button type="submit" class="btn-submit">Submit Enrolment & Pay ₦79,000</button>
         <p class="form-note">By clicking submit, you agree to Axon POD's Terms of Service and Privacy Policy.</p>
       </div>
 
@@ -1088,7 +1108,7 @@
           <p style="font-size: 12px; color: var(--gray-mid); margin-bottom: 15px;">Choose your publishing imprint or create a custom one.</p>
 
           <div class="formatting-question">
-            <div class="formatting-question-text">Publishing Imprint <span class="req">*</span></label></div>
+            <div class="formatting-question-text">Publishing Imprint <span class="req">*</span></div>
             <div class="radio-group">
               <label class="option-item">
                 <input type="radio" name="imprint_choice" value="axon_imprint" onchange="toggleConditionalField('imprint_choice', 'axon_imprint', 'custom_imprint_field')"> Use Axon POD Imprint
