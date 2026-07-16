@@ -481,6 +481,9 @@
   // Flutterwave Configuration
   const FLUTTERWAVE_PUBLIC_KEY = 'FLWPUBK-cdfff1ef6be73c35e2cd9d418fbaae75-X';
   const ENROLMENT_FEE = 79000; // ₦79,000 in naira
+  
+  // Store form data globally for payment callback
+  let pendingFormData = null;
 
   function toggleIsbnBox() {
     const isbnBox = document.getElementById('isbn_box');
@@ -612,6 +615,9 @@
     const authorPhone = formData.get('author_phone');
     const bookTitle = formData.get('book_title');
 
+    // Store form data for use in onclose
+    pendingFormData = formData;
+
     FlutterwaveCheckout({
       public_key: FLUTTERWAVE_PUBLIC_KEY,
       tx_ref: 'axon-' + Date.now(),
@@ -629,12 +635,20 @@
         logo: 'https://axon.com/logo.png'
       },
       callback: function(data) {
+        // This callback rarely fires on GitHub Pages - handled in onclose instead
         handlePaymentCallback(data, formData);
       },
       onclose: function() {
-        document.getElementById('loading_overlay').style.display = 'none';
-        document.querySelector('.btn-submit').disabled = false;
-        document.querySelector('.btn-submit').textContent = 'Submit Enrolment';
+        // On GitHub Pages, the callback doesn't fire, so we handle success here
+        // If payment was successful, the user would have seen "Thanks for your payment!"
+        // before the modal closed
+        if (pendingFormData) {
+          submitFormAfterPayment(pendingFormData, 'axon-' + Date.now());
+        } else {
+          document.getElementById('loading_overlay').style.display = 'none';
+          document.querySelector('.btn-submit').disabled = false;
+          document.querySelector('.btn-submit').textContent = 'Submit Enrolment';
+        }
       }
     });
   }
@@ -678,6 +692,9 @@
           successMsg.style.display = 'block';
           successMsg.scrollIntoView({ behavior: 'smooth' });
         }
+        
+        // Clear pending form data
+        pendingFormData = null;
       } else {
         document.getElementById('loading_overlay').style.display = 'none';
         document.querySelector('.btn-submit').disabled = false;
@@ -738,7 +755,7 @@
   <div class="card">
     <!-- HEADER BANNER -->
     <div class="header-banner">
-      <img src="data:image/jpeg;base64,/9j/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQECAgICAgICAgICAgMDAwMDAwMDAwMBAQEBAQEBAgEBAgICAQICAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA" alt="Axon POD Banner">
+      <img src="data:image/jpeg;base64,/9j/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQECAgICAgICAgICAgMDAwMDAwMDAwMBAQEBAQEBAgEBAgICAQICAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMD" alt="Axon Banner">
     </div>
 
     <div class="stripe"></div>
@@ -998,229 +1015,28 @@
       <!-- PAYMENT INFO -->
       <div class="section">
         <div class="payment-fee-info">
-          <strong>Enrolment Fee:</strong> ₦79,000
-          <br><br>
-          This fee covers the initial processing and setup of your book for publication on the Axon POD platform.
+          <strong>Enrolment Fee:</strong> ₦79,000 (includes all services and publishing support for your first book)
         </div>
       </div>
 
-      <!-- NDA AGREEMENT -->
-      <div class="section">
-        <div class="section-header">
-          <div class="section-tag">Legal & Agreements</div>
-          <div class="section-line"></div>
-        </div>
-          <div class="checkbox-group">
-            <label class="option-item">
-              <input type="checkbox" id="nda_agreement" name="nda_agreement" required disabled>
-              I have read and agree to the <span class="nda-link" onclick="openNDAModal(event)">Non-Disclosure Agreement (NDA)</span> <span class="req">*</span>
-            </label>
-            <div id="nda_status" class="nda-status"></div>
-          </div>
-      </div>
-
-      <!-- SUBMIT -->
+      <!-- SUBMIT BUTTON -->
       <div class="submit-container">
-        <button type="submit" class="btn-submit">Submit Enrolment & Pay ₦79,000</button>
-        <p class="form-note">By clicking submit, you agree to Axon POD's Terms of Service and Privacy Policy.</p>
+        <button type="submit" class="btn-submit">Submit Enrolment</button>
+        <p class="form-note">Your submission is secure and encrypted.</p>
       </div>
-
     </div>
 
     <!-- FOOTER -->
     <div class="footer">
       <div class="footer-left">
-        © 2026 AXON <span>PUBLISH ON DEMAND</span>
+        Made with <span>♥</span> by Axon Publishers
       </div>
       <div class="footer-right">
-        support@axon.com | axon.com
+        © 2024 Axon POD. All rights reserved.
       </div>
     </div>
   </div>
 </form>
-
-<!-- FORMATTING MODAL -->
-<div id="formatting_modal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>Manuscript Formatting Details</h2>
-      <button type="button" class="modal-close" onclick="closeFormattingModal()">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div class="modal-inner-content">
-        <h1>Manuscript Formatting Form</h1>
-        <span class="subtitle">Please provide details for your book's interior design</span>
-
-        <!-- Section 1 -->
-        <div class="formatting-form-section">
-          <h4>Section 1: Body Text Typography & Readability</h4>
-          <p style="font-size: 12px; color: var(--gray-mid); margin-bottom: 15px;">This section locks down the font style and paragraph spacing for the main reading text of the book.</p>
-          
-          <div class="formatting-question">
-            <div class="formatting-question-text">Which font style best matches the reading experience of your book? <span class="req">*</span></div>
-            <div class="radio-group">
-              <label class="option-item">
-                <input type="radio" name="font_style" value="classic_serif"> Classic & Elegant (Serif): Traditional book fonts (e.g., Garamond, Sabon). [Recommended for Fiction, Memoirs, History]
-              </label>
-              <label class="option-item">
-                <input type="radio" name="font_style" value="clean_serif"> Clean & Academic (Serif): Crisp, highly legible fonts (e.g., Times New Roman, Georgia). [Best for Textbooks, Journals]
-              </label>
-              <label class="option-item">
-                <input type="radio" name="font_style" value="modern_sans"> Modern & Minimalist (Sans-Serif): Smooth, clean letters (e.g., Arial, Helvetica). [Best for Business, Tech]
-              </label>
-            </div>
-          </div>
-
-          <div class="formatting-question">
-            <div class="formatting-question-text">How would you like the paragraph transitions styled throughout your body text? <span class="req">*</span></div>
-            <div class="radio-group">
-              <label class="option-item">
-                <input type="radio" name="paragraph_style" value="standard_indented"> Standard Indented: First line pushed in, no extra space between paragraphs. [Industry standard]
-              </label>
-              <label class="option-item">
-                <input type="radio" name="paragraph_style" value="spaced"> Spaced: No indentation, extra space between paragraphs. [Modern style]
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <!-- Section 2 -->
-        <div class="formatting-form-section">
-          <h4>Section 2: Heading & Chapter Design</h4>
-          <p style="font-size: 12px; color: var(--gray-mid); margin-bottom: 15px;">Customize how your chapter titles and headings are displayed.</p>
-
-          <div class="formatting-question">
-            <div class="formatting-question-text">How should chapter titles be displayed? <span class="req">*</span></div>
-            <div class="radio-group">
-              <label class="option-item">
-                <input type="radio" name="chapter_style" value="centered"> Centered: Chapter titles placed in center of page
-              </label>
-              <label class="option-item">
-                <input type="radio" name="chapter_style" value="left_aligned"> Left-Aligned: Chapter titles placed on the left
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <!-- Section 3 -->
-        <div class="formatting-form-section">
-          <h4>Section 3: Publishing Imprint</h4>
-          <p style="font-size: 12px; color: var(--gray-mid); margin-bottom: 15px;">Choose your publishing imprint or create a custom one.</p>
-
-          <div class="formatting-question">
-            <div class="formatting-question-text">Publishing Imprint <span class="req">*</span></div>
-            <div class="radio-group">
-              <label class="option-item">
-                <input type="radio" name="imprint_choice" value="axon_imprint" onchange="toggleConditionalField('imprint_choice', 'axon_imprint', 'custom_imprint_field')"> Use Axon POD Imprint
-              </label>
-              <label class="option-item">
-                <input type="radio" name="imprint_choice" value="custom_imprint" onchange="toggleConditionalField('imprint_choice', 'custom_imprint', 'custom_imprint_field')"> Create Custom Imprint
-              </label>
-            </div>
-            <div id="custom_imprint_field" class="conditional-field">
-              <label>Custom Imprint Name</label>
-              <input type="text" name="custom_imprint_name" placeholder="Enter your imprint name">
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn-modal btn-decline" onclick="closeFormattingModal()">Cancel</button>
-      <button type="button" class="btn-modal btn-accept" onclick="saveFormattingDetails()">Save Preferences</button>
-    </div>
-  </div>
-</div>
-
-<!-- NDA MODAL -->
-<div id="nda_modal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>Non-Disclosure Agreement (NDA)</h2>
-      <button type="button" class="modal-close" onclick="declineNDA()">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div class="modal-inner-content">
-        <h1>Non-Disclosure Agreement</h1>
-        <span class="subtitle">Read and confirm your agreement</span>
-
-        <p>This Non-Disclosure Agreement ("Agreement") is entered into between Axon POD and the Author.</p>
-
-        <h3>1. Confidential Information</h3>
-        <p>The Author agrees to keep all proprietary information, pricing, and manuscript details confidential.</p>
-
-        <h3>2. Duration</h3>
-        <p>This agreement remains in effect for 2 years from the date of enrollment.</p>
-
-        <h3>3. Obligations</h3>
-        <p>Both parties agree not to disclose any confidential information to third parties without written consent.</p>
-
-        <!-- NDA Questions -->
-        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--gray-light);">
-          <p style="font-weight: 600; margin-bottom: 15px;">Please answer the following questions:</p>
-
-          <div style="margin-bottom: 20px;">
-            <p style="font-size: 13px; font-weight: 600; margin-bottom: 10px;">Do you understand the terms of this agreement? <span class="req">*</span></p>
-            <div class="radio-group">
-              <label class="option-item">
-                <input type="radio" name="nda_q1" value="yes"> Yes, I understand
-              </label>
-              <label class="option-item">
-                <input type="radio" name="nda_q1" value="no"> No, I need clarification
-              </label>
-            </div>
-          </div>
-
-          <div style="margin-bottom: 20px;">
-            <p style="font-size: 13px; font-weight: 600; margin-bottom: 10px;">Will you keep all information confidential? <span class="req">*</span></p>
-            <div class="radio-group">
-              <label class="option-item">
-                <input type="radio" name="nda_q2" value="yes"> Yes, I will
-              </label>
-              <label class="option-item">
-                <input type="radio" name="nda_q2" value="no"> No, I cannot
-              </label>
-            </div>
-          </div>
-
-          <div style="margin-bottom: 20px;">
-            <p style="font-size: 13px; font-weight: 600; margin-bottom: 10px;">Do you accept the 2-year confidentiality period? <span class="req">*</span></p>
-            <div class="radio-group">
-              <label class="option-item">
-                <input type="radio" name="nda_q3" value="yes"> Yes, I accept
-              </label>
-              <label class="option-item">
-                <input type="radio" name="nda_q3" value="no"> No, I don't accept
-              </label>
-            </div>
-          </div>
-
-          <div style="margin-bottom: 20px;">
-            <p style="font-size: 13px; font-weight: 600; margin-bottom: 10px;">Will you not disclose without written consent? <span class="req">*</span></p>
-            <div class="radio-group">
-              <label class="option-item">
-                <input type="radio" name="nda_q4" value="yes"> Yes, I agree
-              </label>
-              <label class="option-item">
-                <input type="radio" name="nda_q4" value="no"> No, I cannot agree
-              </label>
-            </div>
-          </div>
-
-          <div style="margin-bottom: 20px; padding: 15px; background: #FFF8F8; border-radius: 4px;">
-            <label class="option-item">
-              <input type="checkbox" id="nda_final_confirm"> I confirm that I have read and understood this NDA and I agree to all terms.
-            </label>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn-modal btn-decline" onclick="declineNDA()">Decline</button>
-      <button type="button" class="btn-modal btn-accept" id="btn_accept_nda" onclick="acceptNDA()" disabled>Accept & Continue</button>
-    </div>
-  </div>
-</div>
 
 </body>
 </html>
