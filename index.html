@@ -1146,7 +1146,6 @@
       <div class="modal-inner-content">
         <h1>Manuscript Formatting Form</h1>
         <span class="subtitle">Please provide details for your book's interior design</span>
-
         <div class="formatting-form-section">
           <h4>Section 1: Body Text Typography & Readability</h4>
           <p style="font-size: 12px; color: var(--gray-mid); margin-bottom: 15px;">This section locks down the font style and paragraph spacing for the main reading text of the book.</p>
@@ -1165,7 +1164,6 @@
               </label>
             </div>
           </div>
-
           <div class="formatting-question">
             <div class="formatting-question-text">How would you like the paragraph transitions styled throughout your body text? <span class="req">*</span></div>
             <div class="radio-group">
@@ -1174,6 +1172,204 @@
               </label>
               <label class="option-item">
                 <input type="radio" name="paragraph_style" value="block_paragraphs"> Block Paragraphs: Flush against left margin, blank line separating them. [Best for Business/Technical]
+              </label>
+            </div>
+          </div>
+
+          <div class="formatting-question">
+            <div class="formatting-question-text">What style do you prefer for the very first letter of a brand-new chapter? <span class="req">*</span></div>
+            <div class="radio-group">
+              <label class="option-item">
+                <input type="radio" name="first_letter_style" value="drop_cap"> Drop Cap: Enlarged letter drops down into first 2-3 lines for a classic look.
+              </label>
+              <label class="option-item">
+                <input type="radio" name="first_letter_style" value="decorative_cap"> Decorative Capital: Enlarged letter sits standard on the first line.
+              </label>
+              <label class="option-item">
+                <input type="radio" name="first_letter_style" value="small_caps"> Small Caps Start: First 3-5 words in sleek SMALL CAPITAL LETTERS.
+              </label>
+              <label class="option-item">
+                <input type="radio" name="first_letter_style" value="plain"> Plain Text: Opening sentence starts normally.
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="formatting-form-section">
+          <h4>Section 2: Chapter Headers & Sub-headings Hierarchy</h4>
+          <p style="font-size: 12px; color: var(--gray-mid); margin-bottom: 15px;">Defines the visual structure for your titles so readers can easily navigate chapters.</p>
+
+          <div class="formatting-question">
+            <div class="formatting-question-text">How should your main Chapter Titles (Heading 1) be aligned on the page? <span class="req">*</span></div>
+            <div class="radio-group">
+              <label class="option-item">
+                <input type="radio" name="chapter_alignment" value="center"> Perfect Center
+              </label>
+              <label class="option-item">
+                <input type="radio" name="chapter_alignment" value="left"> Flush Left-Aligned
+              </label>
+              <label class="option-item">
+                <input type="radio" name="chapter_alignment" value="right"> Right-Aligned (Modern/Artistic)
+              </label>
+            </div>
+          </div>
+
+          <div class="formatting-question">
+            <div class="formatting-question-text">Choose the capitalization styling for your Chapter Titles: <span class="req">*</span></div>
+            <div class="radio-group">
+              <label class="option-item">
+                <input type="radio" name="chapter_caps" value="all_caps"> ALL CAPS (e.g., CHAPTER ONE: THE TURNING POINT)
+              </label>
+              <label class="option-item">
+                <input type="radio" name="chapter_caps" value="title_case"> Title Case (e.g., Chapter One: The Turning Point)
+              </label>
+              <label class="option-item">
+                <input type="radio" name="chapter_caps" value="sentence_case"> Sentence Case (e.g., Chapter one: The turning point)
+              </label>
+            </div>
+          </div>
+
+          <div class="formatting-question">
+            <div class="formatting-question-text">How should sub-headings (Heading 2 / 3) be styled? <span class="req">*</span></div>
+            <div class="radio-group">
+              <label class="option-item">
+                <input type="radio" name="subheading_style" value="bold"> Bold & Distinct: Slightly larger, bold version of body font.
+              </label>
+              <label class="option-item">
+                <input type="radio" name="subheading_style" value="sans_contrast"> Sleek Sans-Serif Contrast: Modern clean font contrasting body font.
+              </label>
+              <label class="option-item">
+                <input type="radio" name="subheading_style" value="italic"> Italicized & Subtle: Same size as body text, but elegant italics.
+              </label>
+              <label class="option-item">
+                <input type="radio" name="subheading_style" value="none"> My manuscript does not contain sub-headings.
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="formatting-form-section">
+          <h4>Section 3: Specialized Text Callouts & Elements</h4>
+
+          <div class="formatting-question">
+            <div class="formatting-question-text">How should long quotes or excerpted passages (Blockquotes) be formatted? <span class="req">*</span></div>
+            <div class="radio-group">
+              <label class="option-item">
+                <input type="radio" name="blockquote_style" value="indent_reduce"> Indent entire block from both margins, reduce font size slightly.
+              </label>
+              <label class="option-item">
+                <input type="radio" name="blockquote_style" value="italic_standard"> Keep standard margins, unique italicized style.
+              </label>
+              <label class="option-item">
+                <input type="radio" name="blockquote_style" value="center"> Center-align the entire excerpted passage block.
+              </label>
+            </div>
+          </div>
+
+          <div class="formatting-question">
+            <div class="formatting-question-text">If your book contains lists, what styling do you prefer? <span class="req">*</span></div>
+            <div class="radio-group">
+              <label class="option-item">
+                <input type="radio" name="list_style" value="round_bullet"> Minimalist standard round bullet dots / standard numbers.
+              </label>
+              <label class="option-item">
+                <input type="radio" name="list_style" value="square_bullet"> Premium square bullet points.
+              </label>
+              <label class="option-item">
+                <input type="radio" name="list_style" value="dash"> Subtle horizontal dash lines (-).
+              </label>
+            </div>
+          </div>
+
+          <div class="formatting-question">
+            <div class="formatting-question-text">How should emphasized words or foreign phrases be styled? (Select all that apply) <span class="req">*</span></div>
+            <div class="checkbox-group">
+              <label class="option-item">
+                <input type="checkbox" name="emphasis_style[]" value="italics"> Standard Italics
+              </label>
+              <label class="option-item">
+                <input type="checkbox" name="emphasis_style[]" value="bold"> Clean Bold
+              </label>
+              <label class="option-item">
+                <input type="checkbox" name="emphasis_style[]" value="underlined"> Underlined text
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="formatting-form-section">
+          <h4>Section 4: Final Text Verification Rules</h4>
+
+          <div class="formatting-question">
+            <div class="formatting-question-text">Confirm how footnotes or endnotes should be formatted: <span class="req">*</span></div>
+            <div class="radio-group">
+              <label class="option-item">
+                <input type="radio" name="notes_style" value="footnotes"> Footnotes at the bottom of the exact page referenced.
+              </label>
+              <label class="option-item">
+                <input type="radio" name="notes_style" value="endnotes"> Grouped as Endnotes at the end of each chapter.
+              </label>
+              <label class="option-item">
+                <input type="radio" name="notes_style" value="master_notes"> Gathered into a master Notes/Bibliography section at the end.
+              </label>
+              <label class="option-item">
+                <input type="radio" name="notes_style" value="none"> My manuscript does not contain footnotes.
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="formatting-form-section">
+          <h4>Section 5: ADDITIONAL INFORMATION</h4>
+
+          <div class="formatting-question">
+            <div class="formatting-question-text">What text do you want written vertically on the physical spine? <span class="req">*</span></div>
+            <div class="radio-group">
+              <label class="option-item">
+                <input type="radio" name="spine_text" value="title_author"> Exact Title + Author Last Name (e.g., Skills are Not Enough — Elijah)
+              </label>
+              <label class="option-item">
+                <input type="radio" name="spine_text" value="title_only"> Exact Title Only
+              </label>
+              <label class="option-item">
+                <input type="radio" name="spine_text" value="blank"> Leave the spine blank (Only recommended if under 80 pages)
+              </label>
+            </div>
+          </div>
+
+          <div class="formatting-question">
+            <div class="formatting-question-text">Publication year for inner copyright page: <span class="req">*</span></div>
+            <div class="radio-group">
+              <label class="option-item">
+                <input type="radio" name="pub_year" value="2026"> 2026
+              </label>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="radio" name="pub_year" value="other">
+                <input type="text" name="pub_year_other" placeholder="Other year" style="width: 100px; padding: 5px;">
+              </div>
+            </div>
+          </div>
+
+          <div class="formatting-question">
+            <div class="formatting-question-text">Does your manuscript contain colored images, charts, or highlights? <span class="req">*</span></div>
+            <div class="radio-group">
+              <label class="option-item">
+                <input type="radio" name="has_color" value="no"> No, it is 100% plain text.
+              </label>
+              <label class="option-item">
+                <input type="radio" name="has_color" value="yes"> Yes, it contains images/charts. (Note: Axon will convert to grayscale).
+              </label>
+            </div>
+          </div>
+
+          <div class="formatting-question">
+            <div class="formatting-question-text">Under which publishing imprint should this book be registered? <span class="req">*</span></div>
+            <div class="radio-group">
+              <label class="option-item">
+                <input type="radio" name="imprint_choice" value="axon"> Axon Marketplace Distribution: Use standard Axon imprint.
+              </label>
+              <label class="option-item">
+                <input type="radio" name="imprint_choice" value="custom"> Custom / Self-Owned Imprint: I am publishing under my own brand.
               </label>
             </div>
           </div>
@@ -1186,6 +1382,14 @@
           </label>
         </div>
 
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-modal btn-decline" onclick="closeFormattingModal()">Cancel</button>
+      <button type="button" class="btn-modal btn-accept" onclick="saveFormattingDetails()">Save Preferences</button>
+    </div>
+  </div>
+</div>
       </div>
     </div>
     <div class="modal-footer">
