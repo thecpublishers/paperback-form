@@ -197,6 +197,41 @@
     text-align: center;
   }
 
+  /* ─── WHATSAPP BUTTON ─── */
+  .btn-whatsapp {
+    background: #25D366;
+    color: var(--white);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    text-transform: none;
+    padding: 14px 24px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-radius: 4px;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    text-decoration: none;
+    max-width: 600px;
+  }
+  .btn-whatsapp:hover {
+    background: #1EBE57;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+  }
+  .btn-whatsapp svg {
+    width: 24px;
+    height: 24px;
+    fill: white;
+    flex-shrink: 0;
+  }
+
   /* ─── FOOTER ─── */
   .footer {
     background: var(--near-black);
@@ -466,7 +501,7 @@
     color: #27AE60;
     margin-bottom: 20px;
   }
-  
+
   .payment-fee-info {
     background: #FFF8F8;
     border: 1px solid var(--red-light);
@@ -493,6 +528,53 @@
     } else {
       isbnBox.style.display = 'none';
     }
+  }
+
+  // eBook Modal Functions
+  function openEbookModal(event) {
+    if (event) event.preventDefault();
+    document.getElementById('ebook_modal').classList.add('show');
+  }
+
+  function closeEbookModal() {
+    document.getElementById('ebook_modal').classList.remove('show');
+  }
+
+  function saveEbookDetails() {
+    document.getElementById('ebook_status').textContent = '✓ eBook details saved';
+    document.getElementById('ebook_status').style.color = 'var(--red)';
+    closeEbookModal();
+  }
+
+  function handleEbookPublishing(value) {
+    if (value === 'yes') {
+      setTimeout(() => {
+        openEbookModal(null);
+      }, 300);
+    }
+  }
+
+  function toggleEbookIsbnBox() {
+    const isbnBox = document.getElementById('ebook_isbn_box');
+    const ownIsbn = document.getElementById('ebook_isbn_own');
+    if (ownIsbn && ownIsbn.checked) {
+      isbnBox.style.display = 'block';
+    } else {
+      isbnBox.style.display = 'none';
+    }
+  }
+
+  function calculateEbookRoyalty() {
+    const priceInput = document.getElementById('ebook_price');
+    const feeDisplay = document.getElementById('ebook_fee_display');
+    const royaltyDisplay = document.getElementById('ebook_royalty_display');
+    
+    const price = parseFloat(priceInput.value) || 0;
+    const fee = price * 0.08;
+    const royalty = price - fee;
+    
+    feeDisplay.textContent = '₦' + fee.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    royaltyDisplay.textContent = '₦' + royalty.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
   }
 
   function calculateCost() {
@@ -552,7 +634,6 @@
   }
 
   function saveFormattingDetails() {
-    // This could validate fields if needed
     closeFormattingModal();
     document.getElementById('formatting_status').textContent = '✓ Formatting preferences saved';
     document.getElementById('formatting_status').style.color = 'var(--red)';
@@ -589,19 +670,10 @@
   }
 
   function checkNDAFulfillment() {
-    const q1 = document.querySelector('input[name="nda_q1"]:checked');
-    const q2 = document.querySelector('input[name="nda_q2"]:checked');
-    const q3 = document.querySelector('input[name="nda_q3"]:checked');
-    const q4 = document.querySelector('input[name="nda_q4"]:checked');
     const final = document.getElementById('nda_final_confirm');
     const acceptBtn = document.getElementById('btn_accept_nda');
-
-    const allYes = (q1 && q1.value === 'yes') && 
-                   (q2 && q2.value === 'yes') && 
-                   (q3 && q3.value === 'yes') && 
-                   (q4 && q4.value === 'yes');
     
-    if (allYes && final.checked) {
+    if (final && final.checked) {
       acceptBtn.disabled = false;
     } else {
       acceptBtn.disabled = true;
@@ -647,7 +719,7 @@
         } else {
           document.getElementById('loading_overlay').style.display = 'none';
           document.querySelector('.btn-submit').disabled = false;
-          document.querySelector('.btn-submit').textContent = 'Submit Enrolment';
+          document.querySelector('.btn-submit').textContent = 'SUBMIT AND MAKE PAYMENT';
         }
       }
     });
@@ -661,7 +733,7 @@
       // Payment failed or cancelled
       document.getElementById('loading_overlay').style.display = 'none';
       document.querySelector('.btn-submit').disabled = false;
-      document.querySelector('.btn-submit').textContent = 'Submit Enrolment';
+      document.querySelector('.btn-submit').textContent = 'SUBMIT AND MAKE PAYMENT';
       alert('Payment was not successful. Please try again.');
     }
   }
@@ -698,23 +770,23 @@
       } else {
         document.getElementById('loading_overlay').style.display = 'none';
         document.querySelector('.btn-submit').disabled = false;
-        document.querySelector('.btn-submit').textContent = 'Submit Enrolment';
+        document.querySelector('.btn-submit').textContent = 'SUBMIT AND MAKE PAYMENT';
         alert('Error submitting form. Please contact support.');
       }
     }).catch(error => {
       document.getElementById('loading_overlay').style.display = 'none';
       document.querySelector('.btn-submit').disabled = false;
-      document.querySelector('.btn-submit').textContent = 'Submit Enrolment';
+      document.querySelector('.btn-submit').textContent = 'SUBMIT AND MAKE PAYMENT';
       alert('Network error. Please check your connection and try again.');
     });
   }
 
   document.addEventListener('DOMContentLoaded', function() {
-    // Add event listeners for NDA questions
-    const ndaInputs = document.querySelectorAll('input[name^="nda_q"], #nda_final_confirm');
-    ndaInputs.forEach(input => {
-      input.addEventListener('change', checkNDAFulfillment);
-    });
+    // Add event listeners for NDA agreement
+    const ndaFinalConfirm = document.getElementById('nda_final_confirm');
+    if (ndaFinalConfirm) {
+      ndaFinalConfirm.addEventListener('change', checkNDAFulfillment);
+    }
 
     const form = document.querySelector('form');
     const loadingOverlay = document.getElementById('loading_overlay');
@@ -723,7 +795,6 @@
     form.addEventListener('submit', function(e) {
       e.preventDefault();
       
-      // Show loading overlay
       if (loadingOverlay) loadingOverlay.style.display = 'flex';
       if (submitBtn) {
         submitBtn.disabled = true;
@@ -751,11 +822,10 @@
   <p>Your payment of ₦79,000 has been confirmed and your enrollment is complete. Our team will reach out to you through your provided WhatsApp line within the next 24 hours to onboard you.</p>
 </div>
 
-<form id="enrollment_form" action="https://formspree.io/f/xwvdazqz" method="POST" enctype="multipart/form-data">
+<form id="enrollment_form" action="https://formspree.io/f/mjgnraby" method="POST" enctype="multipart/form-data">
   <div class="card">
     <!-- HEADER BANNER -->
     <div class="header-banner">
-      <img src="data:image/jpeg;base64,/9j/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQECAgICAgICAgICAgMDAwMDAwMDAwMBAQEBAQEBAgEBAgICAQICAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMD" alt="Axon Banner">
     </div>
 
     <div class="stripe"></div>
@@ -876,12 +946,13 @@
             <label>I Need EBook Publishing for this manuscript. <span class="req">*</span></label>
             <div class="radio-group">
               <label class="option-item">
-                <input type="radio" name="ebook_publishing" value="yes" required> Yes
+                <input type="radio" name="ebook_publishing" value="yes" onchange="handleEbookPublishing('yes')" required> Yes
               </label>
               <label class="option-item">
-                <input type="radio" name="ebook_publishing" value="no"> No
+                <input type="radio" name="ebook_publishing" value="no" onchange="handleEbookPublishing('no')"> No
               </label>
             </div>
+            <div id="ebook_status" class="nda-status"></div>
           </div>
         </div>
       </div>
@@ -1012,6 +1083,21 @@
         </div>
       </div>
 
+      <!-- NDA AGREEMENT -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-tag">Legal & Agreements</div>
+          <div class="section-line"></div>
+        </div>
+          <div class="checkbox-group">
+            <label class="option-item">
+              <input type="checkbox" id="nda_agreement" name="nda_agreement" required disabled>
+              I have read and agree to the <span class="nda-link" onclick="openNDAModal(event)">Non-Disclosure Agreement (NDA)</span> <span class="req">*</span>
+            </label>
+            <div id="nda_status" class="nda-status"></div>
+          </div>
+      </div>
+
       <!-- PAYMENT INFO -->
       <div class="section">
         <div class="payment-fee-info">
@@ -1019,24 +1105,276 @@
         </div>
       </div>
 
-      <!-- SUBMIT BUTTON -->
+      <!-- WHATSAPP BUTTON -->
       <div class="submit-container">
-        <button type="submit" class="btn-submit">Submit Enrolment</button>
-        <p class="form-note">Your submission is secure and encrypted.</p>
+        <a href="https://wa.me/2348119448103?text=Hello%20Axon%20POD%2C%20I%20have%20questions%20about%20the%20enrollment%20process." target="_blank" class="btn-whatsapp">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+            <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-5.5-2.8-23.2-8.5-44.2-27.1-16.4-14.6-27.4-32.7-30.6-38.2-3.2-5.6-.3-8.6 2.4-11.3 2.5-2.4 5.5-6.5 8.3-9.7 2.8-3.3 3.7-5.6 5.5-9.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 13.2 5.8 23.5 9.2 31.5 11.8 13.3 4.2 25.4 3.6 35 2.2 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
+          </svg>
+          Have questions? Chat with us on WhatsApp
+        </a>
       </div>
+
+      <!-- SUBMIT -->
+      <div class="submit-container">
+        <button type="submit" class="btn-submit">SUBMIT AND MAKE PAYMENT</button>
+        <p class="form-note">By clicking submit, you agree to Axon POD's Terms of Service and Privacy Policy.</p>
+      </div>
+
     </div>
 
     <!-- FOOTER -->
     <div class="footer">
       <div class="footer-left">
-        Made with <span>♥</span> by Axon Publishers
+        © 2026 AXON <span>PUBLISH ON DEMAND</span>
       </div>
       <div class="footer-right">
-        © 2024 Axon POD. All rights reserved.
+        support@axon.com | axon.com
       </div>
     </div>
   </div>
 </form>
+
+<!-- FORMATTING MODAL -->
+<div id="formatting_modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Manuscript Formatting Details</h2>
+      <button type="button" class="modal-close" onclick="closeFormattingModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-inner-content">
+        <h1>Manuscript Formatting Form</h1>
+        <span class="subtitle">Please provide details for your book's interior design</span>
+
+        <div class="formatting-form-section">
+          <h4>Section 1: Body Text Typography & Readability</h4>
+          <p style="font-size: 12px; color: var(--gray-mid); margin-bottom: 15px;">This section locks down the font style and paragraph spacing for the main reading text of the book.</p>
+          
+          <div class="formatting-question">
+            <div class="formatting-question-text">Which font style best matches the reading experience of your book? <span class="req">*</span></div>
+            <div class="radio-group">
+              <label class="option-item">
+                <input type="radio" name="font_style" value="classic_serif"> Classic & Elegant (Serif): Traditional book fonts (e.g., Garamond, Sabon). [Recommended for Fiction, Memoirs, History]
+              </label>
+              <label class="option-item">
+                <input type="radio" name="font_style" value="clean_serif"> Clean & Academic (Serif): Crisp, highly legible fonts (e.g., Times New Roman, Georgia). [Best for Textbooks, Journals]
+              </label>
+              <label class="option-item">
+                <input type="radio" name="font_style" value="modern_sans"> Modern & Minimalist (Sans-Serif): Smooth, clean letters (e.g., Arial, Helvetica). [Best for Business, Tech]
+              </label>
+            </div>
+          </div>
+
+          <div class="formatting-question">
+            <div class="formatting-question-text">How would you like the paragraph transitions styled throughout your body text? <span class="req">*</span></div>
+            <div class="radio-group">
+              <label class="option-item">
+                <input type="radio" name="paragraph_style" value="standard_indented"> Standard Indented: First line pushed in, no extra space between paragraphs. [Industry standard]
+              </label>
+              <label class="option-item">
+                <input type="radio" name="paragraph_style" value="block_paragraphs"> Block Paragraphs: Flush against left margin, blank line separating them. [Best for Business/Technical]
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="note-box">
+          <strong>Text Optimization Agreement:</strong><br>
+          <label class="option-item" style="margin-top: 10px;">
+            <input type="checkbox" name="optimization_agreement" required> I agree that Axon's formatting system will automatically clear double spaces, fix punctuation, convert to smart quotes, and standardize text to grayscale.
+          </label>
+        </div>
+
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-modal btn-decline" onclick="closeFormattingModal()">Cancel</button>
+      <button type="button" class="btn-modal btn-accept" onclick="saveFormattingDetails()">Save Preferences</button>
+    </div>
+  </div>
+</div>
+
+<!-- NDA MODAL -->
+
+<div id="nda_modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Non-Disclosure Agreement (NDA)</h2>
+      <button type="button" class="modal-close" onclick="declineNDA()">&times;</button>
+    </div>
+    <div id="nda_body" class="modal-body">
+      <div class="modal-inner-content">
+        <h1>MUTUAL NON-DISCLOSURE AGREEMENT</h1>
+        <span class="subtitle">Last Updated: July 2026</span>
+
+        <p style="font-size: 13px; margin-bottom: 24px; color: var(--gray-dark);">This Non-Disclosure Agreement ("Agreement") is entered into by and between the Platform Operator ("Platform", "we", "us", or "our") and the registering author ("Author", "you", or "your") upon enrollment.</p>
+
+        <div class="formatting-form-section">
+          <h4>1. Purpose of Agreement</h4>
+          <p>The Platform provides a digital marketplace and ecosystem for authors to publish, manage, and distribute their works. In the course of enrollment and platform use, both parties may have access to proprietary, non-public information. This Agreement ensures the protection of such information.</p>
+          
+          <div class="note-box" style="background: #FFF8F8; border-left: 3px solid var(--red); padding: 10px; margin-top: 15px; font-weight: 700; color: var(--red);">
+            Important: We accept only edited manuscripts as we do not offer editing services.
+          </div>
+        </div>
+
+        <div class="formatting-form-section">
+          <h4>2. 100% Author Ownership of Intellectual Property (IP)</h4>
+          <p><strong>Retention of Rights:</strong> Authors/Creators retain 100% ownership and Intellectual Property Rights in and to any manuscripts, books, drafts, cover designs, and creative content you upload or submit to the Platform.</p>
+          <p><strong>Scope of Platform Authority:</strong> Axon claims no ownership over authors' work. Axon's role is strictly limited to manufacturing, printing, marketing, and shipping physical or digital books solely as explicitly instructed and authorized by the creator through the platform interface.</p>
+          <p><strong>No Unauthorized Use:</strong> Axon will never print, distribute, or expose authors' IP to third parties outside of the exact fulfillment instructions you configure on your author dashboard.</p>
+        </div>
+
+        <div class="formatting-form-section">
+          <h4>3. Definition of Confidential Information</h4>
+          <p>"Confidential Information" refers to any proprietary information disclosed by one party to the other, whether orally, visually, or in writing, including but not limited to:</p>
+          <ul style="margin: 10px 0 10px 20px; font-size: 13.5px; color: var(--gray-dark);">
+            <li><strong>Platform Information:</strong> Proprietary software, source code, dashboard mechanics, unreleased platform features, internal analytics, distribution metrics, pricing models, and marketing strategies.</li>
+            <li><strong>Author Information:</strong> Manuscript drafts, unsubmitted content, personal identification data, and proprietary book concepts shared during enrollment or support.</li>
+          </ul>
+        </div>
+
+        <div class="note-box">
+          <strong>Final Agreement:</strong><br>
+          <label class="option-item" style="margin-top: 10px;">
+            <input type="checkbox" id="nda_final_confirm" required> I have read and agree to the terms and conditions of this Mutual Non-Disclosure Agreement.
+          </label>
+        </div>
+
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-modal btn-decline" onclick="declineNDA()">Decline</button>
+      <button type="button" id="btn_accept_nda" class="btn-modal btn-accept" onclick="acceptNDA()" disabled>I Agree & Continue</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- EBOOK MODAL -->
+<div id="ebook_modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>CREATE AN EBOOK</h2>
+      <button type="button" class="modal-close" onclick="closeEbookModal()">&times;</button>
+    </div>
+    <div id="ebook_body" class="modal-body">
+      <div class="modal-inner-content">
+        <h1>EBOOK PUBLISHING DETAILS</h1>
+        <span class="subtitle">Please fill in all required information to proceed</span>
+
+        <div class="formatting-form-section">
+          <div class="section-header">
+            <div class="section-tag">Ebook Details</div>
+            <div class="section-line"></div>
+          </div>
+
+          <div class="formatting-question">
+            <div class="formatting-question-text">Description <span class="req">*</span></div>
+            <textarea id="ebook_description" placeholder="Enter book description" style="width: 100%; padding: 10px; border: 1.5px solid var(--gray-light); border-radius: 2px; font-size: 13.5px; min-height: 100px;"></textarea>
+          </div>
+
+          <div class="formatting-question">
+            <div class="formatting-question-text">Categories/Genres <span class="req">*</span></div>
+            <input type="text" id="ebook_categories" placeholder="e.g. Fiction, Self-Help, Science" style="width: 100%; padding: 10px; border: 1.5px solid var(--gray-light); border-radius: 2px; font-size: 13.5px;">
+          </div>
+
+          <div class="formatting-question">
+            <div class="formatting-question-text">Publication Date <span class="req">*</span></div>
+            <input type="date" id="ebook_pub_date" style="width: 100%; padding: 10px; border: 1.5px solid var(--gray-light); border-radius: 2px; font-size: 13.5px;">
+          </div>
+        </div>
+
+        <div class="formatting-form-section">
+          <div class="section-header">
+            <div class="section-tag">Ebook Content</div>
+            <div class="section-line"></div>
+          </div>
+
+          <div class="formatting-question">
+            <div class="formatting-question-text">Ebook ISBN <span class="req">*</span></div>
+            <div class="radio-group">
+              <label class="option-item">
+                <input type="radio" name="ebook_isbn_choice" id="ebook_isbn_own" value="own" onchange="toggleEbookIsbnBox()" required> Add my own
+              </label>
+              <label class="option-item">
+                <input type="radio" name="ebook_isbn_choice" id="ebook_isbn_assign" value="assign" onchange="toggleEbookIsbnBox()"> Let Axon assign ISBN for me
+              </label>
+            </div>
+            <div id="ebook_isbn_box" style="display: none; margin-top: 10px;">
+              <input type="text" id="ebook_isbn_number" placeholder="Enter your ISBN here" style="width: 100%; padding: 10px; border: 1.5px solid var(--gray-light); border-radius: 2px; font-size: 13.5px;">
+            </div>
+          </div>
+
+          <div class="formatting-question">
+            <div class="formatting-question-text">Would you like to apply Digital Rights Management (DRM) to your files? <span class="req">*</span></div>
+            <div class="radio-group">
+              <label class="option-item">
+                <input type="radio" name="ebook_drm" id="ebook_drm_yes" value="yes" required> Yes
+              </label>
+              <label class="option-item">
+                <input type="radio" name="ebook_drm" id="ebook_drm_no" value="no"> No
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="formatting-form-section">
+          <div class="section-header">
+            <div class="section-tag">Pricing & Retail</div>
+            <div class="section-line"></div>
+          </div>
+          <p style="font-size: 12px; color: var(--gray-mid); margin-bottom: 15px;">Set your eBook retail price. Axon POD charges a flat 8% platform fee on every sale.</p>
+          
+          <div class="formatting-question">
+            <div class="formatting-question-text">Retail Price (₦) <span class="req">*</span></div>
+            <input type="number" id="ebook_price" placeholder="e.g. 5000" oninput="calculateEbookRoyalty()" style="width: 100%; padding: 10px; border: 1.5px solid var(--gray-light); border-radius: 2px; font-size: 13.5px;">
+          </div>
+
+          <div class="note-box" style="background: #F6F6F6; border-left: 3px solid var(--black); padding: 15px; margin-top: 10px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;">
+              <span>Platform Fee (8%):</span>
+              <span id="ebook_fee_display" style="font-weight: 700; color: var(--red);">₦0.00</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 800; border-top: 1px solid var(--gray-light); pt-8; margin-top: 8px; padding-top: 8px;">
+              <span>Your Royalty Per Sale:</span>
+              <span id="ebook_royalty_display" style="color: #27AE60;">₦0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="formatting-form-section">
+          <div class="section-header">
+            <div class="section-tag">Royalty Payment Account</div>
+            <div class="section-line"></div>
+          </div>
+          <p style="font-size: 12px; color: var(--gray-mid); margin-bottom: 15px;">Provide the account details where your royalties will be paid.</p>
+          
+          <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="field">
+              <label style="font-size: 10px; font-weight: 700; color: var(--gray-mid); text-transform: uppercase;">Bank Name <span class="req">*</span></label>
+              <input type="text" id="ebook_bank_name" placeholder="e.g. GTBank" style="width: 100%; padding: 10px; border: 1.5px solid var(--gray-light); border-radius: 2px; font-size: 13.5px;">
+            </div>
+            <div class="field">
+              <label style="font-size: 10px; font-weight: 700; color: var(--gray-mid); text-transform: uppercase;">Account Number <span class="req">*</span></label>
+              <input type="text" id="ebook_account_number" placeholder="10 digits" maxlength="10" style="width: 100%; padding: 10px; border: 1.5px solid var(--gray-light); border-radius: 2px; font-size: 13.5px;">
+            </div>
+          </div>
+          <div class="field" style="margin-top: 15px;">
+            <label style="font-size: 10px; font-weight: 700; color: var(--gray-mid); text-transform: uppercase;">Account Name <span class="req">*</span></label>
+            <input type="text" id="ebook_account_name" placeholder="Full name on account" style="width: 100%; padding: 10px; border: 1.5px solid var(--gray-light); border-radius: 2px; font-size: 13.5px;">
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-modal btn-decline" onclick="closeEbookModal()">Cancel</button>
+      <button type="button" class="btn-modal btn-accept" onclick="saveEbookDetails()">Save eBook Details</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
