@@ -519,6 +519,10 @@
   
   // Store form data globally for payment callback
   let pendingFormData = null;
+  // Tracks whether Flutterwave has actually confirmed a SUCCESSFUL payment.
+  // This is the key fix: onclose used to submit the form just because it fired,
+  // regardless of whether payment succeeded. Now onclose only submits if this is true.
+  let paymentCompleted = false;
 
   function toggleIsbnBox() {
     const isbnBox = document.getElementById('isbn_box');
@@ -680,19 +684,35 @@
     }
   }
 
-  // Flutterwave Payment Handler
+  // ─────────────────────────────────────────────────────────────
+  // Flutterwave Payment Handler (FIXED)
+  //
+  // BUG THAT WAS HERE: onclose() checked "if (pendingFormData)" —
+  // but pendingFormData was set the moment the popup OPENED, not
+  // when payment succeeded. So onclose (which fires on ANY close,
+  // including the user cancelling) always submitted the form.
+  //
+  // FIX: a new paymentCompleted flag is set to true ONLY inside
+  // handlePaymentCallback when Flutterwave confirms status === 'successful'.
+  // onclose now checks THAT flag instead, so cancelling/closing without
+  // paying no longer submits the form.
+  // ─────────────────────────────────────────────────────────────
   function initiateFlutterwavePayment(formData) {
     const authorEmail = formData.get('author_email');
     const authorName = formData.get('author_name');
     const authorPhone = formData.get('author_phone');
     const bookTitle = formData.get('book_title');
 
-    // Store form data for use in onclose
+    // Store form data for use in the callback
     pendingFormData = formData;
+    // Reset the success flag for every new payment attempt
+    paymentCompleted = false;
+
+    const txRef = 'axon-' + Date.now();
 
     FlutterwaveCheckout({
       public_key: FLUTTERWAVE_PUBLIC_KEY,
-      tx_ref: 'axon-' + Date.now(),
+      tx_ref: txRef,
       amount: ENROLMENT_FEE,
       currency: 'NGN',
       payment_options: 'card,ussd,bank_transfer,mobile_money',
@@ -707,30 +727,35 @@
         logo: 'https://axon.com/logo.png'
       },
       callback: function(data) {
-        // This callback rarely fires on GitHub Pages - handled in onclose instead
-        handlePaymentCallback(data, formData);
+        // This is the only place that should decide whether payment succeeded
+        handlePaymentCallback(data, formData, txRef);
       },
       onclose: function() {
-        // On GitHub Pages, the callback doesn't fire, so we handle success here
-        // If payment was successful, the user would have seen "Thanks for your payment!"
-        // before the modal closed
-        if (pendingFormData) {
-          submitFormAfterPayment(pendingFormData, 'axon-' + Date.now());
-        } else {
-          document.getElementById('loading_overlay').style.display = 'none';
-          document.querySelector('.btn-submit').disabled = false;
-          document.querySelector('.btn-submit').textContent = 'SUBMIT AND MAKE PAYMENT';
+        // Fires on EVERY close of the popup — success, failure, or user cancelling.
+        // If callback already confirmed a successful payment, it has already
+        // submitted the form, so there's nothing more to do here.
+        if (paymentCompleted) {
+          return;
         }
+        // Otherwise the popup was closed WITHOUT a confirmed successful payment
+        // (user cancelled, closed it, or payment failed). Do NOT submit the form.
+        document.getElementById('loading_overlay').style.display = 'none';
+        document.querySelector('.btn-submit').disabled = false;
+        document.querySelector('.btn-submit').textContent = 'SUBMIT AND MAKE PAYMENT';
+        pendingFormData = null;
       }
     });
   }
 
-  function handlePaymentCallback(data, formData) {
+  function handlePaymentCallback(data, formData, txRef) {
     if (data.status === 'successful') {
-      // Payment successful - now submit the form data
-      submitFormAfterPayment(formData, data.transaction_id);
+      // Mark payment as confirmed BEFORE onclose fires, so onclose knows
+      // not to treat this as a cancelled/failed attempt.
+      paymentCompleted = true;
+      submitFormAfterPayment(formData, data.transaction_id || txRef);
     } else {
-      // Payment failed or cancelled
+      // Payment failed or was not completed
+      paymentCompleted = false;
       document.getElementById('loading_overlay').style.display = 'none';
       document.querySelector('.btn-submit').disabled = false;
       document.querySelector('.btn-submit').textContent = 'SUBMIT AND MAKE PAYMENT';
@@ -1382,14 +1407,6 @@
           </label>
         </div>
 
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn-modal btn-decline" onclick="closeFormattingModal()">Cancel</button>
-      <button type="button" class="btn-modal btn-accept" onclick="saveFormattingDetails()">Save Preferences</button>
-    </div>
-  </div>
-</div>
       </div>
     </div>
     <div class="modal-footer">
